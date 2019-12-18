@@ -1,0 +1,142 @@
+<html>
+
+<head>
+  <title>Contratista</title>
+  <meta charset='utf-8' />
+</head>
+
+<body>
+  <script src="../vendor/js/jquery-3.3.1.min.js"></script>
+  <script src="../vendor/js/jquery-migrate-1.4.1.min.js"></script>
+  <script src="../vendor/js/bootstrap.js"></script>
+  <script src="../vendor/js/autocomplete.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+  <link rel="stylesheet" type="text/css" href="../vendor/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+    integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+  <!--
+    Mandatory in IE 6, 7, 8 and 9.
+    -->
+  <!--[if IE]>
+        <script type="text/javascript" src="examples/vendor/jszip-utils-ie.js"></script>
+    <![endif]-->
+  <style>
+    body {
+      background: rgba(203, 203, 210, 0.15);
+    }
+    #actualizar{
+margin-top: 30px;
+}
+  </style>
+  <center>
+    <!--button style="float:left;color:white;background-color:#1d56b3" id="enlace" onClick="window.location.href='/levantamiento'" style="display: inline-block;">A levantamiento</button>
+  <button style="float:right;color:white;background-color:#1d56b3" id="authorize-button" style="display: none;">Iniciar Sesion</button>
+  <button style="float:right;color:white;background-color:#1d56b3" id="signout-button" style="display: none;">Cerrar Sesión</button-->
+    <div id="nav-placeholder"></div>
+    <br>
+    <h1>Actualizar Contratista</h1>
+  </center>
+  <div id="container">
+      <div id="container" class="container">
+      <div class="card img-fluid  shadow-lg p-3 mb-5 bg-white" style="width:1000px">
+        <div class="table-responsive"></div>
+        <div class="volver">
+          <a href="#" onclick="history.go(-1)"><i class="fas fa-arrow-circle-left"></i></a>
+        </div>
+        <form id="form" style="margin-left: 5%; margin-right: 5%">
+
+          <div class="row ">
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <span class="help-block text-muted small-font">Nombre</span>
+              <input type="text" class="form-control" id="nombre" name="nombre">
+            </div>
+
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <span class="help-block text-muted small-font"> RUT </span>
+              <input type="text" class="form-control" id="rut" name="rut">
+
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <span class="help-block text-muted small-font">Telefono</span>
+              <input type="text" class="form-control" id="telefono" name="telefono">
+
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <span class="help-block text-muted small-font">Region</span>
+              <input type="text" class="form-control" id="region" name="region">
+            </div>
+          </div>
+
+
+
+          <div class="row">
+            <div class="form-group col-lg-12 lg-offset-1 guardar">
+          <center>
+              <button id="actualizar" class="btn btn-primary">Actualizar</button>
+            </center>
+            </div>
+          </div>
+      </div>
+    </div>
+    </form>
+    </div>
+    <script>
+      //INSERTANDO EL MENU
+      $.get("/views/navbar.html", function (data) {
+        $("#nav-placeholder").replaceWith(data);
+      });
+      $(document).ready(function () {
+        let paths = window.location.pathname.split('/');
+        let idURL = paths[paths.length - 1];
+        fetch('/contratista/show/' + idURL)
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (myJson) {
+            console.log(myJson);
+            $("#id").val(idURL)
+            $("#nombre").val(myJson[0].nombre)
+            $("#rut").val(myJson[0].rut)
+            $("#region").val(myJson[0].region)
+            $("#telefono").val(myJson[0].telefono)
+          })
+
+        $("#actualizar").click(function (event) {
+          event.preventDefault();
+
+          const obj = {
+            id: idURL,
+            nombre: $("#nombre").val(),
+            rut: $("#rut").val(),
+            region: $("#region").val(),
+            telefono: $("#telefono").val(),
+
+          }
+          $.ajax({
+            url: "/contratista/update",
+            type: "POST",
+            data: {
+              obj
+            },
+            success: function (response) {
+              console.log(response);
+              if (response = "ok") {
+                Swal.fire({
+                  title: 'Contratista Actualizado Exitosamente',
+                  type: "success"
+                }).then(function () {
+                  window.location = "/contratista";
+                });
+
+              }
+            }
+          });
+        });
+
+      })
+
+    </script>
